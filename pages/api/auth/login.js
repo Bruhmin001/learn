@@ -1,16 +1,15 @@
 import { connectToDatabase } from "@/lib/mongo";
-import User from "@/models/User";
+import User from "@/models/Users";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
+
 
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
-
   await connectToDatabase();
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
-  if (!user || !(await bcrypt.compare(password, user.password))) {
+  if (!user || password !== user.password) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
